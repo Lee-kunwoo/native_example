@@ -1,5 +1,6 @@
 package com.example.native_example // 패키지 이름 수정 (오타 수정)
 
+import android.app.AlertDialog
 import android.os.Build
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
@@ -11,16 +12,17 @@ import android.util.Base64
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "com.flutter.dev/info"
     private val CHANNEL2 = "com.flutter.dev/encryto"
+    private val CHANNEL3 = "com.flutter.dev/dialog"
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL3)
             .setMethodCallHandler { call, result ->
-                if (call.method == "getDeviceInfo") {
-                    val deviceInfo = getDeviceInfo()
-                    result.success(deviceInfo)
-                } else {
-                    result.notImplemented()
+                if (call.method == "showDialog") {
+                    AlertDialog.Builder(this)
+                        .setTitle("Flutter")
+                        .setMessage("네이티브에서 출력하는 창입니다.")
+                        .show()
                 }
             }
 
