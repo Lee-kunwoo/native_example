@@ -6,8 +6,11 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
+import android.util.Base64
+
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "com.flutter.dev/info"
+    private val CHANNEL2 = "com.flutter.dev/encryto"
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -15,13 +18,32 @@ class MainActivity : FlutterActivity() {
             .setMethodCallHandler { call, result ->
                 if (call.method == "getDeviceInfo") {
                     val deviceInfo = getDeviceInfo()
-                    if (deviceInfo.isNotEmpty()) {
-                        result.success(deviceInfo)
-                    } else {
-                        result.error("EMPTY_DATA", "No device info available", null)
-                    }
+                    result.success(deviceInfo)
                 } else {
                     result.notImplemented()
+                }
+            }
+
+        // Encoding/decoding channel
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL2)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "getEncryto" -> {
+                        val text = call.arguments as String
+                        val encodedText = Base64.encodeToString(text.toByteArray(), Base64.DEFAULT)
+                        result.success(encodedText)
+                    }
+                    "getDecode" -> {
+                        val encodedText = call.arguments as String
+                        try {
+                            val decodedBytes = Base64.decode(encodedText, Base64.DEFAULT)
+                            val decodedText = String(decodedBytes)
+                            result.success(decodedText)
+                        } catch (e: IllegalArgumentException) {
+                            result.error("DECODE_ERROR", "Invalid Base64 data", e.message)
+                        }
+                    }
+                    else -> result.notImplemented()
                 }
             }
     }

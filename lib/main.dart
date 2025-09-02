@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
 
+import 'sendDataExample.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -18,7 +20,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: NativeApp(),
+        home: SendDataExample(), // SendDataExample 사용
       );
     }
   }
